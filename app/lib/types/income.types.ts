@@ -1,9 +1,18 @@
 export type IncomeFormValues = {
-  amount: number;
+  name: string;
   source: string;
-  customSource?: string;
-  platform?: string;
-  brandName?: string;
-  description?: string;
-  recievedAt: string;
+  type: string;
+
+  startDate: string;
+  endDate?: string;
+  frequency: string;
+
+  baseAmount: number;
+  currency: string;
+
+  estimatedAmount?: number;
+  actualAmount?: number;
+
+  status: string;
+  note?: string;
 };

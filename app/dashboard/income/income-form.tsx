@@ -1,108 +1,224 @@
 'use client';
 
+import React, { useState } from 'react';
+import {
+  Calendar,
+  DollarSign,
+  FileText,
+  Layers,
+  Repeat,
+  Tag,
+  Wallet,
+  StickyNote,
+} from 'lucide-react';
+
 import { IncomeFormValues } from '@/app/lib/types/income.types';
 import { Button } from '@/components/ui/button';
 import { FormInput } from '@/components/ui/form-input';
-import React, { useState } from 'react';
+import { FormSelect } from '@/components/ui/form-select';
+import { incomeSchema } from '@/app/lib/validations/income.schema';
 
-type IncomeFormTypes = {
+import {
+  INCOME_SOURCES,
+  INCOME_TYPES,
+  INCOME_FREQUENCIES,
+  INCOME_STATUS,
+  CURRENCIES,
+} from '@/app/lib/constants/income';
+import { ZodIssue } from 'zod/v3';
+
+type Props = {
   onSubmit: (data: IncomeFormValues) => void;
   isSubmitting?: boolean;
 };
 
-export const IncomeForm = ({
-  onSubmit,
-  isSubmitting = false,
-}: IncomeFormTypes) => {
-  const [amount, setAmount] = useState('');
-  const [source, setSource] = useState('');
-  const [customSource, setCustomSource] = useState('');
-  const [platform, setPlatform] = useState('');
-  const [brandName, setBrandName] = useState('');
-  const [description, setDescription] = useState('');
-  const [recievedAt, setRecievedAt] = useState('');
+export const IncomeForm = ({ onSubmit, isSubmitting = false }: Props) => {
+  const [form, setForm] = useState<IncomeFormValues>({
+    name: '',
+    source: '',
+    type: '',
+    startDate: '',
+    endDate: '',
+    frequency: '',
+    baseAmount: 0,
+    currency: 'INR',
+    estimatedAmount: 0,
+    actualAmount: 0,
+    status: 'pending',
+    note: '',
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const [error, setError] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!amount || !source || !recievedAt) {
-      setError('All fields marked * are required');
-      return;
-    }
-
-    setError('');
-
-    onSubmit({
-      amount: Number(amount),
-      source,
-      customSource,
-      recievedAt,
-      platform,
-      brandName,
-      description,
-    });
+  const handleChange = (
+    key: keyof IncomeFormValues,
+    value: string | number
+  ) => {
+    setForm((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
+
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const result = incomeSchema.safeParse(form);
+
+  if (!result.success) {
+    const fieldErrors: Record<string, string> = {};
+
+    result.error.issues.forEach((issue) => {
+      const field = issue.path[0] as string;
+      fieldErrors[field] = issue.message;
+    });
+
+    setErrors(fieldErrors);
+    return;
+  }
+
+  setErrors({});
+  onSubmit(result.data);
+};
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <FormInput
-        type="number"
-        placeholder="Amount"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
-      <select
-        value={source}
-        onChange={(e) => setSource(e.target.value)}
-        className="bg-background border-border rounded-xl border p-2"
-      >
-        <option value="">Select Source</option>
-        <option value="ADS">Ads</option>
-        <option value="SPONSORSHIP">Sponsorship</option>
-        <option value="AFFILIATE">Affiliate</option>
-        <option value="SUBSCRIPTION">Subscription</option>
-        <option value="DONATION">Donation</option>
-        <option value="OTHER">Other</option>
-      </select>
-      {source === 'OTHER' && (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Name */}
         <FormInput
-          type="text"
-          placeholder="Enter custom source"
-          value={customSource}
-          onChange={(e) => setCustomSource(e.target.value)}
+          label="Name"
+          placeholder="Income Name"
+          value={form.name}
+          onChange={(e) => handleChange('name', e.target.value)}
+          icon={<FileText size={16} />}
+          error={errors.name}
         />
-      )}
-      <FormInput
-        type="text"
-        placeholder="Platform"
-        value={platform}
-        onChange={(e) => setPlatform(e.target.value)}
-      />
-      <FormInput
-        type="text"
-        placeholder="Description  "
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <FormInput
-        type="text  "
-        placeholder="Brand Name "
-        value={brandName}
-        onChange={(e) => setBrandName(e.target.value)}
-      />
-      <FormInput
-        type="date"
-        placeholder="Recieved Date"
-        value={recievedAt}
-        onChange={(e) => setRecievedAt(e.target.value)}
-      />
+
+        {/* Source */}
+        <FormSelect
+          label="Source"
+          value={form.source}
+          onChange={(val) => handleChange('source', val)}
+          options={INCOME_SOURCES}
+          placeholder="Select Source"
+          icon={<Layers size={16} />}
+          error={errors.source}
+        />
+
+        {/* Type */}
+        <FormSelect
+          label="Type"
+          value={form.type}
+          onChange={(val) => handleChange('type', val)}
+          options={INCOME_TYPES}
+          placeholder="Select Type"
+          icon={<Tag size={16} />}
+          error={errors.type}
+        />
+
+        {/* Frequency */}
+        <FormSelect
+          label="Frequency"
+          value={form.frequency}
+          onChange={(val) => handleChange('frequency', val)}
+          options={INCOME_FREQUENCIES}
+          placeholder="Select Frequency"
+          icon={<Repeat size={16} />}
+          error={errors.frequency}
+        />
+
+        {/* Start Date */}
+        <FormInput
+          label="Start Date"
+          type="date"
+          value={form.startDate}
+          onChange={(e) => handleChange('startDate', e.target.value)}
+          icon={<Calendar size={16} />}
+          error={errors.startDate}
+        />
+
+        {/* End Date */}
+        <FormInput
+          label="End Date"
+          type="date"
+          value={form.endDate || ''}
+          onChange={(e) => handleChange('endDate', e.target.value)}
+          icon={<Calendar size={16} />}
+          error={errors.endDate}
+        />
+
+        {/* Base Amount */}
+        <FormInput
+          label="Base Amount"
+          type="number"
+          placeholder="Enter amount"
+          value={form.baseAmount ? String(form.baseAmount) : ''}
+          onChange={(e) =>
+            handleChange('baseAmount', Number(e.target.value))
+          }
+          icon={<DollarSign size={16} />}
+          error={errors.baseAmount}
+        />
+
+        {/* Currency */}
+        <FormSelect
+          label="Currency"
+          value={form.currency}
+          onChange={(val) => handleChange('currency', val)}
+          options={CURRENCIES}
+          icon={<Wallet size={16} />}
+          error={errors.currency}
+        />
+
+        {/* Estimated Amount */}
+        <FormInput
+          label="Estimated Amount"
+          type="number"
+          value={form.estimatedAmount ? String(form.estimatedAmount) : ''}
+          onChange={(e) =>
+            handleChange('estimatedAmount', Number(e.target.value))
+          }
+          icon={<DollarSign size={16} />}
+          error={errors.estimatedAmount}
+        />
+
+        {/* Actual Amount */}
+        <FormInput
+          label="Actual Amount"
+          type="number"
+          value={form.actualAmount ? String(form.actualAmount) : ''}
+          onChange={(e) =>
+            handleChange('actualAmount', Number(e.target.value))
+          }
+          icon={<DollarSign size={16} />}
+          error={errors.actualAmount}
+        />
+
+        {/* Status */}
+        <FormSelect
+          label="Status"
+          value={form.status}
+          onChange={(val) => handleChange('status', val)}
+          options={INCOME_STATUS}
+          icon={<Tag size={16} />}
+          error={errors.status}
+        />
+
+        {/* Note */}
+        <div className="md:col-span-2">
+          <FormInput
+            label="Note"
+            placeholder="Optional note..."
+            value={form.note || ''}
+            onChange={(e) => handleChange('note', e.target.value)}
+            icon={<StickyNote size={16} />}
+            error={errors.note}
+          />
+        </div>
+      </div>
+
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Adding...' : 'Add Income'}
       </Button>
-
-      {error && <p className="text-sm text-red-500">{error}</p>}
     </form>
   );
 };

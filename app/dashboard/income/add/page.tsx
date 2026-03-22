@@ -1,24 +1,22 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 
+import { IncomeForm } from '../income-form';
 import { IncomeFormValues } from '@/app/lib/types/income.types';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
-import Modal from '@/components/ui/modal';
-import { IncomeForm } from './income-form';
-import { useRouter } from 'next/navigation';
 
-export default function IncomePage() {
-  const [isOpen, setIsOpen] = useState(false);
+
+export default function AddIncomePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const addIncomeMutation = useMutation({
     mutationFn: async (newIncome: IncomeFormValues) => {
       const userId = localStorage.getItem('userId');
-      console.log(newIncome);
 
       if (!userId) throw new Error('No User');
 
@@ -37,19 +35,30 @@ export default function IncomePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['income'] });
-      setIsOpen(false);
+      router.push('/dashboard/income'); // ✅ go back after success
     },
   });
 
   return (
     <Container>
-      <div className="mt-2 mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-2xl font-bold">All Income</h1>
-
-        <Button onClick={() => router.push('/dashboard/income/add')}>
-          Add Income
+      {/* Header */}
+      <div className="mb-6 flex items-center gap-3">
+        <Button
+          variant="ghost"
+          // size="icon"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft size={18} />
         </Button>
+
+        <h1 className="text-2xl font-bold">Add Income</h1>
       </div>
+
+      {/* Form */}
+      <IncomeForm
+        onSubmit={(data) => addIncomeMutation.mutate(data)}
+        isSubmitting={addIncomeMutation.isPending}
+      />
     </Container>
   );
 }
