@@ -1,86 +1,37 @@
 'use client';
 
-import { DashboardTable } from '@/app/dashboard/dashboard-table';
-import { formatDate } from '@/app/lib/constants';
-import { Expense, ExpenseFormValues } from '@/app/lib/types/expense.types';
-import { Column } from '@/app/lib/types/table.types';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { Loader } from '@/components/ui/loader';
-import Modal from '@/components/ui/modal';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { Modal } from '@/components/ui/modal';
+import { useState } from 'react';
+
+import { DashboardTable } from '@/app/dashboard/dashboard-table';
+import { expenseColumns } from '@/app/lib/constants/expense.column';
+import { computeDateRange } from '@/app/lib/utitls/expense.utils';
+import { ExpenseForm } from '@/components/expense/expense-form';
+import { useExpenseMutation } from '@/hooks/expense/useExpenseMutation';
+import { useExpenses } from '@/hooks/expense/useExpenses';
+// import { useCategories } from '@/hooks/useCategories';
 import { FilterBar } from '../filter-bar';
-import ExpenseForm from './expense-form';
-
-interface ExpenseProps {
-  id: string;
-  amount: number;
-  category: string;
-  date: string;
-  createdAt: string;
-}
-
-interface FetchExpenseProps {
-  page: number;
-  pageSize: number;
-  sortBy: string;
-  order: 'asc' | 'desc';
-  search: string;
-  from: string | null;
-  to: string | null;
-}
 
 export default function ExpensePage() {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Pagination states
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // Filtering states
   const [dateFilter, setDateFilter] = useState('latest');
   const [fromDate, setFromDate] = useState<string | null>(null);
   const [toDate, setToDate] = useState<string | null>(null);
 
-  // sorting states
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('createdAt');
   const [order, setOrder] = useState<'asc' | 'desc'>('desc');
 
-  // debounce search
-  const [debounceSearch, setDebounceSearch] = useState(search);
+  const { from, to } = computeDateRange(dateFilter, fromDate, toDate);
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebounceSearch(search);
-    }, 400);
-    return () => clearTimeout(handler);
-  }, [search]);
-
-  // Date computation logic
-  const computeDateRange = () => {
-    const now = new Date();
-
-    if (dateFilter === 'currentMonth') {
-      const first = new Date(now.getFullYear(), now.getMonth(), 1);
-      return { from: first.toISOString(), to: now.toISOString() };
-    }
-
-    if (dateFilter === 'last90') {
-      const past = new Date();
-      past.setDate(now.getDate() - 90);
-      return { from: past.toISOString(), to: now.toISOString() };
-    }
-
-    if (dateFilter === 'custom' && fromDate && toDate) {
-      return { from: fromDate, to: toDate };
-    }
-
-    return { from: null, to: null };
-  };
-
-  const fetchExpense = async ({
+  const { data, isLoading, isFetching } = useExpenses({
     page,
     pageSize,
     sortBy,
@@ -88,115 +39,51 @@ export default function ExpensePage() {
     search,
     from,
     to,
-  }: FetchExpenseProps) => {
-    const userId = localStorage.getItem('userId');
-
-    if (!userId) throw new Error('No user');
-
-    const params = new URLSearchParams({
-      page: String(page),
-      pageSize: String(pageSize),
-      sortBy,
-      order,
-      search,
-    });
-
-    if (from && to) {
-      params.append('from', from);
-      params.append('to', to);
-    }
-
-    const res = await fetch(`/api/expense?${params.toString()}`, {
-      headers: {
-        'user-id': userId,
-      },
-    });
-
-    if (!res.ok) {
-      throw new Error('failed to fetch');
-    }
-
-    return res.json();
-  };
-
-  const { from, to } = computeDateRange();
-
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: [
-      'expenses',
-      page,
-      pageSize,
-      dateFilter,
-      fromDate,
-      toDate,
-      debounceSearch,
-      sortBy,
-      order,
-    ],
-    queryFn: () =>
-      fetchExpense({
-        page,
-        pageSize,
-        sortBy,
-        order,
-        search: debounceSearch,
-        from,
-        to,
-      }),
-    placeholderData: (previousData) => previousData,
   });
 
-  const queryClient = useQueryClient();
-
-  const addExpenseMutation = useMutation({
-    mutationFn: async (newExpense: ExpenseFormValues) => {
-      const userId = localStorage.getItem('userId');
-
-      if (!userId) throw new Error('No user');
-
-      const res = await fetch('/api/expense', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'user-id': userId,
-        },
-        body: JSON.stringify(newExpense),
-      });
-
-      if (!res.ok) throw new Error('Failed to add expense');
-
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expenses'] });
-      setIsOpen(false);
-    },
+  const mutation = useExpenseMutation(() => {
+    setIsOpen(false);
   });
+
   return (
     <Container>
-      <div className="mt-2 mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-2xl font-bold">All Expenses</h1>
+      {/* HEADER */}
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Expenses</h1>
+          <p className="text-muted-foreground text-sm">
+            Track and manage all your expenses
+          </p>
+        </div>
 
-        <Button onClick={() => setIsOpen(true)}>Add Expense</Button>
+        <Button onClick={() => setIsOpen(true)}>+ Add Expense</Button>
       </div>
 
+      {/* MODAL */}
       <Modal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         title="Add Expense"
       >
         <ExpenseForm
-          onSubmit={(data: any) => addExpenseMutation.mutate(data)}
-          isSubmitting={addExpenseMutation.isPending}
+          onSubmit={mutation.mutate}
+          isSubmitting={mutation.isPending}
         />
       </Modal>
 
       {isLoading ? (
-        <div className="">
+        <div className="flex justify-center py-10">
           <Loader />
         </div>
       ) : (
-        <div className="border-border relative w-full border">
+        <div className="relative flex flex-col gap-4">
+          {isFetching && (
+            <div className="text-muted-foreground absolute top-2 right-2 text-xs">
+              Updating...
+            </div>
+          )}
+
+          {/* FILTER BAR */}
           <FilterBar
             dateFilter={dateFilter}
             setDateFilter={setDateFilter}
@@ -213,47 +100,28 @@ export default function ExpensePage() {
             setPage={setPage}
           />
 
-          {isFetching && (
-            <div className="absolute top-4 right-4 text-xs">Updating...</div>
+          {/* EMPTY STATE */}
+          {data?.data?.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-10 text-center">
+              <p className="text-muted-foreground text-sm">No expenses found</p>
+              <Button className="mt-3" onClick={() => setIsOpen(true)}>
+                Add your first expense
+              </Button>
+            </div>
+          ) : (
+            <DashboardTable
+              data={data?.data ?? []}
+              columns={expenseColumns}
+              page={page}
+              pageSize={pageSize}
+              totalPages={data?.totalPages ?? 0}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+              pageSizeOptions={[5, 10, 20, 25]}
+            />
           )}
-
-          <DashboardTable
-            data={data?.data ?? []}
-            columns={expenseColumns}
-            page={page}
-            pageSize={pageSize}
-            pageSizeOptions={[5, 10, 25, 50]}
-            totalPages={data?.totalPages ?? 0}
-            onPageChange={setPage}
-            onPageSizeChange={(size) => {
-              setPageSize(size);
-              setPage(1);
-            }}
-          />
         </div>
       )}
     </Container>
   );
 }
-
-export const expenseColumns: Column<Expense>[] = [
-  {
-    key: 'category',
-    label: 'Category',
-  },
-  {
-    key: 'date',
-    label: 'Expense Date',
-    render: (value) => formatDate(value as string),
-  },
-  {
-    key: 'createdAt',
-    label: 'Created At',
-    render: (value) => formatDate(value as string),
-  },
-  {
-    key: 'amount',
-    label: 'Amount',
-    render: (value) => `₹ ${value}`,
-  },
-];

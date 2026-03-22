@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { IncomeFormValues } from '@/app/lib/types/income.types';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
-import Modal from '@/components/ui/modal';
+import { Modal } from '@/components/ui/modal';
 import { IncomeForm } from './income-form';
 
 export default function IncomePage() {
