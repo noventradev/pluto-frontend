@@ -18,6 +18,7 @@ export function ExpenseForm({ onSubmit, isSubmitting = false }: Props) {
     handleSubmit,
     handleEntryChange,
     handleStreamChange,
+    handleRecurringToggle,
   } = useExpenseForm(onSubmit);
 
   return (
@@ -31,6 +32,7 @@ export function ExpenseForm({ onSubmit, isSubmitting = false }: Props) {
         onChange={handleChange}
         onEntryChange={handleEntryChange}
         onStreamChange={handleStreamChange}
+        onRecurringToggle={handleRecurringToggle}
       />
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">

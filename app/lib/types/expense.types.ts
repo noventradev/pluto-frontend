@@ -10,12 +10,18 @@ export type ExpenseStatus = 'PENDING' | 'PAID' | 'CANCELLED';
 
 export type Frequency = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
 
-export type CategoryType = 'EQUIPMENT' | 'SALARY' | 'MARKETING' | 'OTHER';
+export type CategoryType =
+  | 'EQUIPMENT'
+  | 'FOOD'
+  | 'SALARY'
+  | 'TRAVEL'
+  | 'MARKETING'
+  | 'OTHER';
 
 export type ExpenseFormValues = {
   // category
   categoryName: string;
-  categoryType: CategoryType;
+  categoryType: CategoryType | '';
 
   // toggle
   isRecurring: boolean;

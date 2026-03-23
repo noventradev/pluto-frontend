@@ -1,17 +1,19 @@
-import { ExpenseFormValues } from '@/app/lib/types/expense.types';
+import { ExpenseFormValues } from '../types/expense.types';
 
 export function validateExpense(form: ExpenseFormValues): string | null {
   // CATEGORY
   if (!form.categoryName) return 'Category name is required';
   if (!form.categoryType) return 'Category type is required';
 
-  // ENTRY (always required)
-  if (!form.entry?.amount) return 'Amount is required';
-  if (Number(form.entry.amount) <= 0) return 'Amount must be greater than 0';
+  // 🔥 FIXED LOGIC
+  if (!form.isRecurring) {
+    if (!form.entry?.amount) return 'Amount is required';
+    if (Number(form.entry.amount) <= 0) return 'Amount must be greater than 0';
 
-  if (!form.entry?.currency) return 'Currency is required';
-  if (!form.entry?.status) return 'Status is required';
-  if (!form.entry?.paidAt) return 'Paid date is required';
+    if (!form.entry?.currency) return 'Currency is required';
+    if (!form.entry?.status) return 'Status is required';
+    if (!form.entry?.paidAt) return 'Paid date is required';
+  }
 
   // STREAM (only if recurring)
   if (form.isRecurring) {

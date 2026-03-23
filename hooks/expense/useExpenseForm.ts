@@ -5,7 +5,7 @@ import { useState } from 'react';
 export function useExpenseForm(onSubmit: (data: ExpenseFormValues) => void) {
   const initialForm: ExpenseFormValues = {
     categoryName: '',
-    categoryType: 'OTHER',
+    categoryType: '',
     isRecurring: false,
 
     entry: {
@@ -83,6 +83,13 @@ export function useExpenseForm(onSubmit: (data: ExpenseFormValues) => void) {
             currency: prev.entry.currency,
           }
         : undefined,
+      entry: value
+        ? {
+            ...prev.entry,
+            amount: prev.stream?.baseAmount || '',
+            status: 'PENDING',
+          }
+        : prev.entry,
     }));
   };
 
