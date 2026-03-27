@@ -9,7 +9,6 @@ import { IncomeFormValues } from '@/app/lib/types/income.types';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 
-
 export default function AddIncomePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -35,7 +34,7 @@ export default function AddIncomePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['income'] });
-      router.push('/dashboard/income'); // ✅ go back after success
+      router.push('/dashboard/income');
     },
   });
 

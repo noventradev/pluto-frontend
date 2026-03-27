@@ -1,31 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
 import {
   Calendar,
   DollarSign,
   FileText,
   Layers,
   Repeat,
+  StickyNote,
   Tag,
   Wallet,
-  StickyNote,
 } from 'lucide-react';
+import React, { useState } from 'react';
 
 import { IncomeFormValues } from '@/app/lib/types/income.types';
+import { incomeSchema } from '@/app/lib/validators/income.schema';
 import { Button } from '@/components/ui/button';
 import { FormInput } from '@/components/ui/form-input';
 import { FormSelect } from '@/components/ui/form-select';
-import { incomeSchema } from '@/app/lib/validations/income.schema';
 
 import {
-  INCOME_SOURCES,
-  INCOME_TYPES,
-  INCOME_FREQUENCIES,
-  INCOME_STATUS,
   CURRENCIES,
+  INCOME_FREQUENCIES,
+  INCOME_SOURCES,
+  INCOME_STATUS,
+  INCOME_TYPES,
 } from '@/app/lib/constants/income';
-import { ZodIssue } from 'zod/v3';
 
 type Props = {
   onSubmit: (data: IncomeFormValues) => void;
@@ -59,30 +58,30 @@ export const IncomeForm = ({ onSubmit, isSubmitting = false }: Props) => {
     }));
   };
 
-const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const result = incomeSchema.safeParse(form);
+    const result = incomeSchema.safeParse(form);
 
-  if (!result.success) {
-    const fieldErrors: Record<string, string> = {};
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
 
-    result.error.issues.forEach((issue) => {
-      const field = issue.path[0] as string;
-      fieldErrors[field] = issue.message;
-    });
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as string;
+        fieldErrors[field] = issue.message;
+      });
 
-    setErrors(fieldErrors);
-    return;
-  }
+      setErrors(fieldErrors);
+      return;
+    }
 
-  setErrors({});
-  onSubmit(result.data);
-};
+    setErrors({});
+    onSubmit(result.data);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Name */}
         <FormInput
           label="Name"
@@ -152,9 +151,7 @@ const handleSubmit = (e: React.FormEvent) => {
           type="number"
           placeholder="Enter amount"
           value={form.baseAmount ? String(form.baseAmount) : ''}
-          onChange={(e) =>
-            handleChange('baseAmount', Number(e.target.value))
-          }
+          onChange={(e) => handleChange('baseAmount', Number(e.target.value))}
           icon={<DollarSign size={16} />}
           error={errors.baseAmount}
         />
@@ -186,9 +183,7 @@ const handleSubmit = (e: React.FormEvent) => {
           label="Actual Amount"
           type="number"
           value={form.actualAmount ? String(form.actualAmount) : ''}
-          onChange={(e) =>
-            handleChange('actualAmount', Number(e.target.value))
-          }
+          onChange={(e) => handleChange('actualAmount', Number(e.target.value))}
           icon={<DollarSign size={16} />}
           error={errors.actualAmount}
         />

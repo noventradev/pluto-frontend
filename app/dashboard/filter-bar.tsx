@@ -1,80 +1,77 @@
+'use client';
+
+import { ExpenseFilters } from '@/app/lib/types/filter.types';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useEffect, useState } from 'react';
+
+const inputClass =
+  'border-border bg-background rounded-md border px-3 py-2 text-sm focus:outline-none w-full';
+
 type FilterBarProps = {
-  dateFilter: string;
-  setDateFilter: (val: string) => void;
-  search: string;
-  setSearch: (val: string) => void;
-  sortBy: string;
-  setSortBy: (val: string) => void;
-  order: 'asc' | 'desc';
-  setOrder: (val: 'asc' | 'desc') => void;
-  fromDate: string | null;
-  setFromDate: (val: string) => void;
-  toDate: string | null;
-  setToDate: (val: string) => void;
-  setPage: (val: number) => void;
+  filters: ExpenseFilters;
+  onChange: (updated: Partial<ExpenseFilters>) => void;
 };
 
-export function FilterBar({
-  dateFilter,
-  setDateFilter,
-  search,
-  setSearch,
-  sortBy,
-  setSortBy,
-  order,
-  setOrder,
-  fromDate,
-  setFromDate,
-  toDate,
-  setToDate,
-  setPage,
-}: FilterBarProps) {
+export function FilterBar({ filters, onChange }: FilterBarProps) {
+  const [searchInput, setSearchInput] = useState(filters.search);
+  const debouncedSearch = useDebounce(searchInput);
+
+  useEffect(() => {
+    onChange({ search: debouncedSearch, page: 1 });
+  }, [debouncedSearch]);
+
   return (
-    <div className="m-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-wrap items-center gap-3 p-2">
       {/* Date Filter */}
       <select
-        value={dateFilter}
-        onChange={(e) => {
-          setDateFilter(e.target.value);
-          setPage(1);
-        }}
-        className="border-border bg-background rounded-md border px-3 py-2 text-sm focus:outline-none"
+        value={filters.dateFilter}
+        onChange={(e) =>
+          onChange({
+            dateFilter: e.target.value as ExpenseFilters['dateFilter'],
+            page: 1,
+          })
+        }
+        className={inputClass}
+        style={{ maxWidth: 160 }}
       >
         <option value="latest">Latest</option>
         <option value="currentMonth">Current Month</option>
         <option value="last90">Last 90 Days</option>
-        <option value="custom">Custom</option>
+        <option value="custom">Custom Range</option>
       </select>
 
-      {dateFilter === 'custom' && (
-        <div className="flex gap-2">
+      {/* Custom Date Range */}
+      {filters.dateFilter === 'custom' && (
+        <>
           <input
             type="date"
-            value={fromDate ?? ''}
-            onChange={(e) => setFromDate(e.target.value)}
+            value={filters.fromDate ?? ''}
             max={new Date().toISOString().split('T')[0]}
-            className="bg-background border-border rounded-md border px-2 py-1 focus:outline-none"
+            onChange={(e) => onChange({ fromDate: e.target.value, page: 1 })}
+            className={inputClass}
+            style={{ maxWidth: 150 }}
           />
+          <span className="text-muted-foreground text-sm">to</span>
           <input
             type="date"
-            value={toDate ?? ''}
-            onChange={(e) => setToDate(e.target.value)}
+            value={filters.toDate ?? ''}
             max={new Date().toISOString().split('T')[0]}
-            className="bg-background border-border rounded-md border px-2 py-1 focus:outline-none"
+            onChange={(e) => onChange({ toDate: e.target.value, page: 1 })}
+            className={inputClass}
+            style={{ maxWidth: 150 }}
           />
-        </div>
+        </>
       )}
 
       {/* Sort */}
       <select
-        value={`${sortBy}-${order}`}
+        value={`${filters.sortBy}-${filters.order}`}
         onChange={(e) => {
           const [field, ord] = e.target.value.split('-');
-          setSortBy(field);
-          setOrder(ord as 'asc' | 'desc');
-          setPage(1);
+          onChange({ sortBy: field, order: ord as 'asc' | 'desc', page: 1 });
         }}
-        className="border-border bg-background rounded-md border px-3 py-2 text-sm focus:outline-none"
+        className={inputClass}
+        style={{ maxWidth: 180 }}
       >
         <option value="createdAt-desc">Newest</option>
         <option value="createdAt-asc">Oldest</option>
@@ -87,12 +84,10 @@ export function FilterBar({
       <input
         type="text"
         placeholder="Search..."
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setPage(1);
-        }}
-        className="border-border rounded-md border px-3 py-2 text-sm focus:outline-none"
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        className={inputClass}
+        style={{ maxWidth: 200 }}
       />
     </div>
   );

@@ -7,12 +7,13 @@ interface Option {
   label: string;
   value: string;
 }
+type selectOption = string | Option;
 
 interface FormSelectFieldProps {
   label?: string;
   value: string;
   onChange: (value: string) => void;
-  options: readonly string[];
+  options: readonly selectOption[];
   placeholder?: string;
   icon?: React.ReactNode;
   className?: string;
@@ -29,6 +30,9 @@ export function FormSelect({
   className,
   error,
 }: FormSelectFieldProps) {
+  const normalizedOptions = options.map((opt) =>
+    typeof opt === 'string' ? { label: opt, value: opt } : opt
+  );
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       {label && (
@@ -43,14 +47,14 @@ export function FormSelect({
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-transparent text-sm outline-none"
+          className="bg-background w-full text-sm outline-none"
         >
           <option value="" hidden>
             {placeholder || 'Select'}
           </option>
-          {options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
+          {normalizedOptions.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
             </option>
           ))}
         </select>
