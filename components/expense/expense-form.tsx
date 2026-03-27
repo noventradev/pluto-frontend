@@ -22,18 +22,17 @@ export function ExpenseForm({ onSubmit, isSubmitting = false }: Props) {
   } = useExpenseForm(onSubmit);
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="border-border bg-background flex flex-col gap-6 rounded-2xl border p-5 shadow-sm"
-    >
+    <form onSubmit={handleSubmit} className="bg-background flex flex-col gap-4">
       {/* FORM FIELDS */}
-      <ExpenseFormFields
-        form={form}
-        onChange={handleChange}
-        onEntryChange={handleEntryChange}
-        onStreamChange={handleStreamChange}
-        onRecurringToggle={handleRecurringToggle}
-      />
+      <div className="">
+        <ExpenseFormFields
+          form={form}
+          onChange={handleChange}
+          onEntryChange={handleEntryChange}
+          onStreamChange={handleStreamChange}
+          onRecurringToggle={handleRecurringToggle}
+        />
+      </div>
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
           {error}

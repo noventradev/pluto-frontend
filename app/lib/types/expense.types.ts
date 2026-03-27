@@ -1,9 +1,32 @@
 export type Expense = {
   id: string;
-  category: string;
-  date: string;
   createdAt: string;
-  amount: number;
+
+  // category
+  categoryName: string;
+  categoryType: CategoryType;
+
+  // recurring
+  isRecurring: boolean;
+  stream?: {
+    id: string;
+    name: string;
+    frequency: Frequency;
+    interval: number;
+    startDate: string;
+    endDate?: string;
+    baseAmount: string;
+    currency: string;
+  };
+
+  // entry
+  entry: {
+    id: string;
+    amount: string;
+    currency: string;
+    status: ExpenseStatus;
+    paidAt: string;
+  };
 };
 
 export type ExpenseStatus = 'PENDING' | 'PAID' | 'CANCELLED';
@@ -16,6 +39,10 @@ export type CategoryType =
   | 'SALARY'
   | 'TRAVEL'
   | 'MARKETING'
+  | 'HEALTH'
+  | 'SOFTWARE'
+  | 'UTILITIES'
+  | 'RENT'
   | 'OTHER';
 
 export type ExpenseFormValues = {
@@ -32,6 +59,7 @@ export type ExpenseFormValues = {
     frequency: Frequency;
     interval: number;
     startDate: string;
+    endDate: string;
     baseAmount: string;
     currency: string;
   };

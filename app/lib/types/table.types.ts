@@ -12,6 +12,7 @@ export type DashboardTableProps<T> = {
 };
 
 export type Column<T> = {
+  id?: string;
   key: keyof T;
   label: string;
   render?: (value: T[keyof T], row: T) => React.ReactNode;

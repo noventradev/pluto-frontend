@@ -1,49 +1,47 @@
 'use client';
 
+import { DashboardTable } from '@/app/dashboard/dashboard-table';
+import { expenseColumns } from '@/components/expense/expense-column';
+import {
+  defaultExpenseFilters,
+  ExpenseFilters,
+} from '@/app/lib/types/filter.types';
+import { computeDateRange } from '@/app/lib/utitls/expense.utils';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { Loader } from '@/components/ui/loader';
-import { Modal } from '@/components/ui/modal';
-import { useState } from 'react';
-
-import { DashboardTable } from '@/app/dashboard/dashboard-table';
-import { expenseColumns } from '@/app/lib/constants/expense.column';
-import { computeDateRange } from '@/app/lib/utitls/expense.utils';
-import { ExpenseForm } from '@/components/expense/expense-form';
-import { useExpenseMutation } from '@/hooks/expense/useExpenseMutation';
 import { useExpenses } from '@/hooks/expense/useExpenses';
-// import { useCategories } from '@/hooks/useCategories';
+import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
 import { FilterBar } from '../filter-bar';
+import { sampleExpenses } from '@/mocks/expense-sample-data';
 
 export default function ExpensePage() {
-  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [filters, setFilters] = useState<ExpenseFilters>(defaultExpenseFilters);
 
-  const [dateFilter, setDateFilter] = useState('latest');
-  const [fromDate, setFromDate] = useState<string | null>(null);
-  const [toDate, setToDate] = useState<string | null>(null);
+  const handleFilterChange = useCallback((updated: Partial<ExpenseFilters>) => {
+    setFilters((prev) => ({ ...prev, ...updated }));
+  }, []);
 
-  const [search, setSearch] = useState('');
-  const [sortBy, setSortBy] = useState('createdAt');
-  const [order, setOrder] = useState<'asc' | 'desc'>('desc');
-
-  const { from, to } = computeDateRange(dateFilter, fromDate, toDate);
+  const { from, to } = computeDateRange(
+    filters.dateFilter,
+    filters.fromDate,
+    filters.toDate
+  );
 
   const { data, isLoading, isFetching } = useExpenses({
-    page,
-    pageSize,
-    sortBy,
-    order,
-    search,
+    page: filters.page,
+    pageSize: filters.pageSize,
+    sortBy: filters.sortBy,
+    order: filters.order,
+    search: filters.search,
     from,
     to,
   });
 
-  const mutation = useExpenseMutation(() => {
-    setIsOpen(false);
-  });
+  const sampleData = sampleExpenses;
 
   return (
     <Container>
@@ -55,21 +53,8 @@ export default function ExpensePage() {
             Track and manage all your expenses
           </p>
         </div>
-
-        <Button onClick={() => setIsOpen(true)}>+ Add Expense</Button>
+        <Button onClick={() => router.push('expense/add')}>Add Expense</Button>
       </div>
-
-      {/* MODAL */}
-      <Modal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        title="Add Expense"
-      >
-        <ExpenseForm
-          onSubmit={mutation.mutate}
-          isSubmitting={mutation.isPending}
-        />
-      </Modal>
 
       {isLoading ? (
         <div className="flex justify-center py-10">
@@ -83,40 +68,23 @@ export default function ExpensePage() {
             </div>
           )}
 
-          {/* FILTER BAR */}
-          <FilterBar
-            dateFilter={dateFilter}
-            setDateFilter={setDateFilter}
-            search={search}
-            setSearch={setSearch}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
-            order={order}
-            setOrder={setOrder}
-            fromDate={fromDate}
-            setFromDate={setFromDate}
-            toDate={toDate}
-            setToDate={setToDate}
-            setPage={setPage}
-          />
+          <FilterBar filters={filters} onChange={handleFilterChange} />
 
-          {/* EMPTY STATE */}
           {data?.data?.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-10 text-center">
               <p className="text-muted-foreground text-sm">No expenses found</p>
-              <Button className="mt-3" onClick={() => setIsOpen(true)}>
-                Add your first expense
-              </Button>
             </div>
           ) : (
             <DashboardTable
-              data={data?.data ?? []}
+              data={sampleData}
               columns={expenseColumns}
-              page={page}
-              pageSize={pageSize}
+              page={filters.page}
+              pageSize={filters.pageSize}
               totalPages={data?.totalPages ?? 0}
-              onPageChange={setPage}
-              onPageSizeChange={setPageSize}
+              onPageChange={(val) => handleFilterChange({ page: val })}
+              onPageSizeChange={(val) =>
+                handleFilterChange({ pageSize: val, page: 1 })
+              }
               pageSizeOptions={[5, 10, 20, 25]}
             />
           )}

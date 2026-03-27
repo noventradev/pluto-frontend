@@ -56,6 +56,7 @@ export function useExpenseForm(onSubmit: (data: ExpenseFormValues) => void) {
         frequency: 'MONTHLY',
         interval: 1,
         startDate: '',
+        endDate: '',
         baseAmount: '',
         currency: prev.entry.currency,
       };
@@ -79,6 +80,7 @@ export function useExpenseForm(onSubmit: (data: ExpenseFormValues) => void) {
             frequency: 'MONTHLY',
             interval: 1,
             startDate: '',
+            endDate: '',
             baseAmount: '',
             currency: prev.entry.currency,
           }

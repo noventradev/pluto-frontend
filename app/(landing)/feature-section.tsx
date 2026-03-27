@@ -1,28 +1,32 @@
 import { Container } from '@/components/ui/container';
 import { SectionLabel } from './section-label';
+import SVG1 from '@/components/illustrations/svg1';
+import SVG2 from '@/components/illustrations/svg2';
+import SVG3 from '@/components/illustrations/svg3';
+import SVG4 from '@/components/illustrations/svg4';
 
 export const FeatureSection = () => {
   const features = [
     {
-      imgae: '',
+      imgae: <SVG1 />,
       title: 'Instant Visibilty, Zero Delays',
       subtitle:
         "See spend appear the moment it happens, whether it's a coffee or a client dinner.",
     },
     {
-      imgae: '',
+      imgae: <SVG2 />,
       title: 'Continous Cash Flow Insights',
       subtitle:
         'See how money moves across the expenses and operations with graphs and patterns',
     },
     {
-      imgae: '',
+      imgae: <SVG3 />,
       title: 'Built for transparency',
       subtitle:
         'Every transactions is flagged with a categorical expense and employee details instantly.',
     },
     {
-      imgae: '',
+      imgae: <SVG4 />,
       title: 'Smarter Alerts & Notification',
       subtitle:
         'Customize notifications by amount, category or user to focus only on what matters the most.',
@@ -44,8 +48,13 @@ export const FeatureSection = () => {
         <div className="grid grid-cols-2 gap-8 px-30">
           {features &&
             features.map((feature, index) => (
-              <div className="border-border rounded-2xl border" key={index}>
-                <div className="bg-surface/40 h-64"></div>
+              <div
+                className="border-border bg-surface overflow-hidden rounded-2xl border shadow-2xs"
+                key={index}
+              >
+                <div className="bg-surface flex h-60 items-center justify-between">
+                  {feature.imgae}
+                </div>
                 <div className="p-6">
                   <h4 className="text-lg font-semibold tracking-tight">
                     {feature.title}

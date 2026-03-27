@@ -20,7 +20,7 @@ export const DashboardTable = <T extends { id: string | number }>({
             <tr>
               {columns.map((col) => (
                 <th
-                  key={String(col.key)}
+                  key={col.id ?? String(col.key)}
                   scope="col"
                   className="px-4 py-2 capitalize"
                 >
@@ -41,13 +41,12 @@ export const DashboardTable = <T extends { id: string | number }>({
               data.map((row) => (
                 <tr key={row.id}>
                   {columns.map((col) => (
-                    <td
-                      key={String(col.key)}
-                      className="px-4 py-1.5 capitalize"
-                    >
+                    <td key={col.id ?? String(col.key)} className="px-4 py-1.5">
                       {col.render
                         ? col.render(row[col.key], row)
-                        : String(row[col.key])}
+                        : typeof row[col.key] === 'object'
+                          ? '—'
+                          : String(row[col.key] ?? '—')}
                     </td>
                   ))}
                 </tr>
@@ -59,7 +58,7 @@ export const DashboardTable = <T extends { id: string | number }>({
       {/* Mobile View */}
       <div className="flex flex-col gap-4 p-4 md:hidden">
         {data.length === 0 ? (
-          <div className="text-muted rounded-lg border p-6 text-center">
+          <div className="text-muted-foreground rounded-lg border p-6 text-center text-sm">
             No data available
           </div>
         ) : (
@@ -70,14 +69,16 @@ export const DashboardTable = <T extends { id: string | number }>({
             >
               {columns.map((col) => (
                 <div
-                  key={String(col.key)}
+                  key={col.id ?? String(col.key)}
                   className="flex justify-between gap-4"
                 >
                   <span className="text-muted font-medium">{col.label}</span>
-                  <span className="capitalize">
+                  <span>
                     {col.render
                       ? col.render(row[col.key], row)
-                      : String(row[col.key])}
+                      : typeof row[col.key] === 'object'
+                        ? '—'
+                        : String(row[col.key] ?? '—')}
                   </span>
                 </div>
               ))}

@@ -1,4 +1,5 @@
 import { ExpenseFormValues } from '@/app/lib/types/expense.types';
+import apiClient from './api/client';
 
 export interface FetchExpenseParams {
   page: number;
@@ -36,21 +37,25 @@ export async function fetchExpenses(params: FetchExpenseParams) {
   return res.json();
 }
 
-export const createExpense = async (data: ExpenseFormValues) => {
-  console.log(data);
-  const userId = localStorage.getItem('userId');
-  if (!userId) throw new Error('No user');
+// export const createExpense = async (data: ExpenseFormValues) => {
+//   console.log(data);
+//   const userId = localStorage.getItem('userId');
+//   if (!userId) throw new Error('No user');
 
-  const res = await fetch('/api/expense', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'user-id': userId,
-    },
-    body: JSON.stringify(data),
-  });
+//   const res = await fetch('/api/expense', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'user-id': userId,
+//     },
+//     body: JSON.stringify(data),
+//   });
 
-  if (!res.ok) throw new Error('Failed to create expense');
+//   if (!res.ok) throw new Error('Failed to create expense');
 
-  return res.json();
+//   return res.json();
+// };
+
+export const expenseApi = {
+  create: (data: ExpenseFormValues) => apiClient.post('/api/expense', data),
 };
