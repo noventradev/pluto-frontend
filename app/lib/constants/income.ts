@@ -26,9 +26,3 @@ export const INCOME_STATUS = [
 ] as const;
 
 export const CURRENCIES = ['INR', 'USD', 'EUR'] as const;
-
-export type IncomeSource = (typeof INCOME_SOURCES)[number];
-export type IncomeType = (typeof INCOME_TYPES)[number];
-export type IncomeFrequency = (typeof INCOME_FREQUENCIES)[number];
-export type IncomeStatus = (typeof INCOME_STATUS)[number];
-export type Currency = (typeof CURRENCIES)[number];

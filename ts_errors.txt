@@ -1,0 +1,6 @@
+﻿.next/dev/types/validator.ts(115,31): error TS2344: Type 'typeof import("E:/Noventra/pluto-frontend/app/sign-in/page")' does not satisfy the constraint 'AppPageConfig<"/sign-in">'.
+  Property 'default' is missing in type 'typeof import("E:/Noventra/pluto-frontend/app/sign-in/page")' but required in type 'AppPageConfig<"/sign-in">'.
+components/income/income-form-fields.tsx(3,3): error TS2305: Module '"@/app/lib/constants/income"' has no exported member 'Currency'.
+components/income/income-form-fields.tsx(7,3): error TS2724: '"@/app/lib/constants/income"' has no exported member named 'IncomeFrequency'. Did you mean 'INCOME_FREQUENCIES'?
+components/income/income-form-fields.tsx(8,3): error TS2724: '"@/app/lib/constants/income"' has no exported member named 'IncomeSource'. Did you mean 'INCOME_SOURCES'?
+components/income/income-form-fields.tsx(9,3): error TS2724: '"@/app/lib/constants/income"' has no exported member named 'IncomeType'. Did you mean 'INCOME_TYPES'?

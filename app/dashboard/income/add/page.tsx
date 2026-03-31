@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft } from 'lucide-react';
 
-import { IncomeForm } from '../income-form';
+import { IncomeForm } from '@/components/income/income-form';
 import { IncomeFormValues } from '@/app/lib/types/income.types';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
