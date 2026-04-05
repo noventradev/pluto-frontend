@@ -3,11 +3,15 @@
 import { cn } from '@/app/lib/utils';
 import {
   BanknoteArrowUp,
-  BookOpenCheck,
   LayoutDashboard,
   PanelRightOpen,
-  UserCheck,
   Wallet,
+  Handshake,
+  CreditCard,
+  BarChart3,
+  Settings,
+  ContactRound,
+  UserRoundPen,
 } from 'lucide-react';
 import { useState } from 'react';
 import { SidebarItems } from './sidebar-items';
@@ -18,8 +22,11 @@ export const Sidebar = () => {
 
   return (
     <aside
-      className={`border-border overflow-y-auto border-r py-6 pt-5 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-16' : 'w-64'}`}
+      className={`border-border overflow-y-auto border-r py-6 pt-5 transition-all duration-300 ease-in-out ${
+        isCollapsed ? 'w-16' : 'w-64'
+      }`}
     >
+      {/* Header */}
       <div className="flex items-center justify-between px-4">
         {!isCollapsed && <p className="text-xl font-bold">Pluto</p>}
         <Button
@@ -28,13 +35,17 @@ export const Sidebar = () => {
           onClick={() => setIsCollapsed((prev) => !prev)}
         >
           <PanelRightOpen
-            className={`hover:text-foreground text-muted size-5 ${isCollapsed ? 'rotate-180' : ''}`}
-            focusable="false"
+            className={`hover:text-foreground text-muted size-5 ${
+              isCollapsed ? 'rotate-180' : ''
+            }`}
           />
         </Button>
       </div>
-      <hr className="my-6 border-transparent" />
+
+      <hr className="my-4 border-transparent" />
+
       <ul className="space-y-6 px-2">
+        {/* MAIN */}
         <li>
           <p
             className={cn(
@@ -54,21 +65,24 @@ export const Sidebar = () => {
               icon={<LayoutDashboard />}
               collapsed={isCollapsed}
             />
+
             <SidebarItems
-              path="/dashboard/expense"
-              pathName="Expense"
-              icon={<Wallet />}
+              path="/dashboard/deals"
+              pathName="Deals"
+              icon={<Handshake />}
               collapsed={isCollapsed}
             />
+
             <SidebarItems
-              path="/dashboard/income"
-              pathName="Income"
-              icon={<BanknoteArrowUp />}
+              path="/dashboard/payments"
+              pathName="Payments"
+              icon={<CreditCard />}
               collapsed={isCollapsed}
             />
           </ul>
         </li>
 
+        {/* FINANCE */}
         <li>
           <p
             className={cn(
@@ -78,20 +92,77 @@ export const Sidebar = () => {
                 : 'mb-2 max-h-10 opacity-100'
             )}
           >
-            Management
+            Finance
           </p>
 
           <ul className="space-y-1">
             <SidebarItems
-              path="/dashboard/staff"
-              pathName="Daily attendees"
+              path="/dashboard/income"
+              pathName="Income"
+              icon={<BanknoteArrowUp />}
               collapsed={isCollapsed}
-              icon={<UserCheck />}
+            />
+
+            <SidebarItems
+              path="/dashboard/expense"
+              pathName="Expense"
+              icon={<Wallet />}
+              collapsed={isCollapsed}
+            />
+
+            <SidebarItems
+              path="/dashboard/analytics"
+              pathName="Analytics"
+              icon={<BarChart3 />}
+              collapsed={isCollapsed}
+            />
+          </ul>
+        </li>
+        <li>
+          <p
+            className={cn(
+              'overflow-hidden px-2 text-sm font-semibold transition-all duration-200',
+              isCollapsed
+                ? 'mb-0 max-h-0 opacity-0'
+                : 'mb-2 max-h-10 opacity-100'
+            )}
+          >
+            Organization
+          </p>
+
+          <ul className="space-y-1">
+            <SidebarItems
+              path="/dashboard/members"
+              pathName="Members"
+              icon={<ContactRound />}
+              collapsed={isCollapsed}
             />
             <SidebarItems
-              path="/dashboard/wages"
-              pathName="Daily wages"
-              icon={<BookOpenCheck />}
+              path="/dashboard/permissions"
+              pathName="Permissions"
+              icon={<UserRoundPen />}
+              collapsed={isCollapsed}
+            />
+          </ul>
+        </li>
+        {/* SYSTEM */}
+        <li>
+          <p
+            className={cn(
+              'overflow-hidden px-2 text-sm font-semibold transition-all duration-200',
+              isCollapsed
+                ? 'mb-0 max-h-0 opacity-0'
+                : 'mb-2 max-h-10 opacity-100'
+            )}
+          >
+            System
+          </p>
+
+          <ul className="space-y-1">
+            <SidebarItems
+              path="/dashboard/settings"
+              pathName="Settings"
+              icon={<Settings />}
               collapsed={isCollapsed}
             />
           </ul>

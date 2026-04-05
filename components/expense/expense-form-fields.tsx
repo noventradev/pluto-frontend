@@ -117,14 +117,14 @@ export function ExpenseFormFields({
             <h3 className="text-sm font-semibold">Recurring Details</h3>
           </div>
 
-          <FormInput
-            label="Stream Name"
-            type="text"
-            value={form.stream?.name || ''}
-            onChange={(e) => onStreamChange('name', e.target.value)}
-          />
-
           <div className="grid grid-cols-2 gap-4">
+            <FormInput
+              label="Stream Name"
+              type="text"
+              value={form.stream?.name || ''}
+              onChange={(e) => onStreamChange('name', e.target.value)}
+            />
+
             <div className="flex flex-col gap-1.5">
               <label className="text-muted-foreground text-xs font-medium">
                 Frequency
@@ -143,18 +143,6 @@ export function ExpenseFormFields({
                 <option value="YEARLY">Yearly</option>
               </select>
             </div>
-
-            <FormInput
-              label="Interval"
-              type="number"
-              value={form.stream?.interval?.toString() || ''}
-              onChange={(e) =>
-                onStreamChange(
-                  'interval',
-                  e.target.value ? Number(e.target.value) : 1
-                )
-              }
-            />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
