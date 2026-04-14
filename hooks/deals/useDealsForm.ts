@@ -1,7 +1,8 @@
-import { DealFormValues } from '@/app/lib/types/deal.types';
+import { CreateDealDTO, DealFormValues } from '@/app/lib/types/deal.types';
+import { createDealSchema } from '@/app/lib/validators/deal.validators';
 import { useState } from 'react';
 
-export function useDealForm(onSubmit: (data: DealFormValues) => void) {
+export function useDealForm(onSubmit: (data: CreateDealDTO) => void) {
   const initialForm: DealFormValues = {
     title: '',
     dealType: '',
@@ -28,6 +29,8 @@ export function useDealForm(onSubmit: (data: DealFormValues) => void) {
 
     startDate: '',
     endDate: null,
+
+    nextPaymentDate: null,
 
     notes: null,
   };
@@ -71,14 +74,23 @@ export function useDealForm(onSubmit: (data: DealFormValues) => void) {
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-
     setError('');
 
-    onSubmit({
+    const parsedData = createDealSchema().safeParse({
       ...form,
-      agreedValue: form.agreedValue.trim(),
-      cycleAmount: form.isRecurring ? form.cycleAmount.trim() : '',
+      agreedValue: Number(form.agreedValue),
+      cycleAmount: form.cycleAmount ? Number(form.cycleAmount) : null,
+      startDate: new Date(form.startDate),
+      endDate: form.endDate ? new Date(form.endDate) : null,
+      nextPaymentDate: form.nextPaymentDate ? new Date(form.nextPaymentDate) : null,
     });
+
+    if (!parsedData.success) {
+      setError(parsedData.error.issues[0]?.message || 'Invalid form data');
+      return;
+    }
+
+    onSubmit(parsedData.data);
 
     setForm(initialForm);
   };

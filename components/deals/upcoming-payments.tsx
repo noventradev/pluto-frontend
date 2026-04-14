@@ -36,9 +36,7 @@ export const UpcomingPayments = ({ deals }: Props) => {
             <div className="space-y-1">
               <p className="font-medium">{deal.title}</p>
               <p className="text-muted-foreground text-xs">
-                {Object.entries(deal.counterparty)
-                  .map(([key, value]) => `${key}: ${value}`)
-                  .join(' • ')}
+                {deal.counterPartyName}
               </p>
             </div>
 

@@ -52,7 +52,7 @@ export const ActiveDealsList = ({ deals }: Props) => {
             <DealCard
               key={deal.id}
               deal={deal}
-              onClick={(id) => router.push(`/deals/${id}`)}
+              onClick={(id) => router.push(`deals/${id}`)}
             />
           ))}
         </div>

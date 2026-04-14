@@ -17,6 +17,7 @@ export function computeDealMetrics(deal: Deal): DealMetrics {
   const overdueCount = deal.payments.filter(
     (p) => p.status === 'OVERDUE'
   ).length;
+  console.log(overdueCount);
 
   const progressPct =
     deal.agreedValue > 0
@@ -27,11 +28,7 @@ export function computeDealMetrics(deal: Deal): DealMetrics {
     ? Math.ceil((new Date(deal.endDate).getTime() - Date.now()) / 86_400_000)
     : null;
 
-  const isOverdue =
-    overdueCount > 0 ||
-    (deal.nextPaymentDate != null &&
-      new Date(deal.nextPaymentDate) < new Date() &&
-      deal.paidValue < deal.agreedValue);
+  const isOverdue = overdueCount > 0;
 
   return {
     paidCount,

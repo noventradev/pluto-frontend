@@ -6,7 +6,7 @@ type Props = {
 
 export const DealStats = ({ deals }: Props) => {
   const activeDeals = deals.filter((d) => d.status === 'ACTIVE');
-  const totalEarnings = deals.reduce((acc, d) => acc + d.paidValue, 0);
+  const totalEarnings = deals.reduce((acc, d) => acc + Number(d.paidValue), 0);
   const recurringDeals = deals.filter((d) => d.isRecurring);
 
   return (

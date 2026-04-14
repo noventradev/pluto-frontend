@@ -1,24 +1,5 @@
 'use client';
 
-import { cn } from '@/app/lib/utils';
-import { FormInput } from '@/components/ui/form-input';
-import { FormSelect } from '../ui/form-select';
-import {
-  FileText,
-  User,
-  Calendar,
-  IndianRupee,
-  Link,
-  RefreshCw,
-} from 'lucide-react';
-import { motion } from 'motion/react';
-import {
-  DealFormValues,
-  DealStatus,
-  DealType,
-  CounterpartyType,
-  RecurrenceInterval,
-} from '@/app/lib/types/deal.types';
 import {
   COUNTERPARTY_TYPE_OPTIONS,
   DEAL_STATUS_OPTIONS,
@@ -26,6 +7,18 @@ import {
   RECURRENCE_INTERVAL_OPTIONS,
 } from '@/app/lib/constants/deals';
 import { CURRENCIES, Currency } from '@/app/lib/constants/income';
+import {
+  CounterpartyType,
+  DealFormValues,
+  DealStatus,
+  DealType,
+  RecurrenceInterval,
+} from '@/app/lib/types/deal.types';
+import { cn } from '@/app/lib/utils';
+import { FormInput } from '@/components/ui/form-input';
+import { Calendar, FileText, IndianRupee, RefreshCw, User } from 'lucide-react';
+import { motion } from 'motion/react';
+import { FormSelect } from '../ui/form-select';
 
 type Props = {
   form: DealFormValues;
@@ -179,7 +172,7 @@ export function DealFormFields({
         <motion.section
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="border-border flex flex-col gap-4 rounded-xl border p-4"
+          className="border-border grid grid-cols-2 gap-4 rounded-xl border p-4"
         >
           <FormInput
             label="Cycle Amount"
@@ -196,43 +189,33 @@ export function DealFormFields({
             }
             options={RECURRENCE_INTERVAL_OPTIONS}
           />
+          <FormInput
+            label="Next Payment Date"
+            type="date"
+            value={form.nextPaymentDate || ''}
+            onChange={(e) => onChange('nextPaymentDate', e.target.value)}
+            icon={<Calendar size={16} />}
+          />
+          <FormInput
+            label="End Date"
+            type="date"
+            value={form.endDate || ''}
+            onChange={(e) => onChange('endDate', e.target.value)}
+            icon={<Calendar size={16} />}
+          />
         </motion.section>
       )}
 
       <hr className="border-border border-t" />
-
-      {/* SECTION: Timeline */}
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormInput
-          label="Start Date"
-          type="date"
-          value={form.startDate}
-          onChange={(e) => onChange('startDate', e.target.value)}
-          icon={<Calendar size={16} />}
-        />
-
-        <FormInput
-          label="End Date"
-          type="date"
-          value={form.endDate || ''}
-          onChange={(e) => onChange('endDate', e.target.value)}
-          icon={<Calendar size={16} />}
-        />
-      </section>
-
+      <FormInput
+        label="Start Date"
+        type="date"
+        value={form.startDate}
+        onChange={(e) => onChange('startDate', e.target.value)}
+        icon={<Calendar size={16} />}
+      />
       <hr className="border-border border-t" />
 
-      {/* SECTION: Relation */}
-      <section>
-        <FormInput
-          label="Parent Deal ID"
-          value={form.parentDealId || ''}
-          onChange={(e) => onChange('parentDealId', e.target.value || null)}
-          icon={<Link size={16} />}
-        />
-      </section>
-
-      {/* SECTION: Notes */}
       <section>
         <textarea
           placeholder="Notes..."

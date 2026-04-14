@@ -1,12 +1,12 @@
 'use client';
 
-import { DealFormValues } from '@/app/lib/types/deal.types';
+import { CreateDealDTO } from '@/app/lib/types/deal.types';
 import { DealFormFields } from '@/components/deals/deal-form-fields';
 import { Button } from '@/components/ui/button';
 import { useDealForm } from '@/hooks/deals/useDealsForm';
 
 type Props = {
-  onSubmit: (data: DealFormValues) => void;
+  onSubmit: (data: CreateDealDTO) => void;
   isSubmitting?: boolean;
 };
 

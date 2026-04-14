@@ -6,7 +6,6 @@ import { Container } from '@/components/ui/container';
 import { useDealsMutation } from '@/hooks/deals/useDealsMutation';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 
 const AddDeal = () => {
   const mutation = useDealsMutation();
@@ -16,7 +15,6 @@ const AddDeal = () => {
       <div className="mb-6 flex items-center gap-3">
         <Button
           variant="ghost"
-          // size="icon"
           onClick={() => router.back()}
         >
           <ArrowLeft size={18} />

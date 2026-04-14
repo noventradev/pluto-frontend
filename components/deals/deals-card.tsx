@@ -31,7 +31,7 @@ export const DealCard = ({ deal, onClick }: Props) => {
   const nextPayment = deal.payments.find(
     (p) => p.status === 'PENDING' || p.status === 'OVERDUE'
   );
-
+  const outstandingValue = deal.agreedValue - deal.paidValue;
   return (
     <div
       onClick={() => onClick?.(deal.id)}
@@ -57,7 +57,7 @@ export const DealCard = ({ deal, onClick }: Props) => {
             >
               {deal.dealType}
             </span>
-            {deal.amendments.length > 0 && (
+            {deal.amendments && deal.amendments.length > 0 && (
               <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-300">
                 revised {deal.amendments.length}×
               </span>
@@ -66,7 +66,7 @@ export const DealCard = ({ deal, onClick }: Props) => {
 
           {/* counterparty · dates · days remaining / overdue */}
           <div className="text-muted-foreground flex flex-wrap items-center gap-1.5 text-xs">
-            <span>{deal.counterparty.name}</span>
+            <span>{deal.counterPartyName}</span>
             <span className="opacity-40">·</span>
             <span>{formatDealDate(deal.startDate)}</span>
             {deal.endDate && (
@@ -100,7 +100,7 @@ export const DealCard = ({ deal, onClick }: Props) => {
             className={cn(
               'border-border shrink-0 rounded-lg border px-3 py-2 text-right',
               nextPayment.status === 'OVERDUE'
-                ? 'border-destructive/30 bg-red-50 dark:bg-red-950'
+                ? 'bg-red-50 dark:bg-red-950'
                 : 'bg-background'
             )}
           >
@@ -119,7 +119,7 @@ export const DealCard = ({ deal, onClick }: Props) => {
               )}
             >
               {formatDealDate(nextPayment.dueDate)}
-              {nextPayment.status === 'OVERDUE' && ' · overdue'}
+              {/* {nextPayment.status === 'OVERDUE' && ' ·overdue'} */}
             </p>
           </div>
         )}
@@ -130,14 +130,15 @@ export const DealCard = ({ deal, onClick }: Props) => {
         <div className="text-muted-foreground mb-1.5 flex justify-between text-xs">
           <span>{formatINR(deal.paidValue)} paid</span>
           <span>
-            {formatINR(deal.outstandingValue)} outstanding · {m.progressPct}%
+            {formatINR(outstandingValue)} outstanding · {m.progressPct}%
           </span>
         </div>
         <div className="bg-border/40 h-1 w-full overflow-hidden rounded-full">
           <div
             className={cn(
               'h-full rounded-full transition-all',
-              m.isOverdue ? 'bg-destructive' : 'bg-emerald-500'
+              // m.isOverdue ? 'bg-destructive' : 'bg-emerald-500'
+              'bg-emerald-500'
             )}
             style={{ width: `${m.progressPct}%` }}
           />

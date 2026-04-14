@@ -5,25 +5,36 @@ import { DealStats } from '@/components/deals/deal-stats';
 import { UpcomingPayments } from '@/components/deals/upcoming-payments';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
-import { mockDeals } from '@/mocks/deals-sample-data';
+import { Loader } from '@/components/ui/loader';
+import { useDealQuery } from '@/hooks/deals/useDealQuery';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 
 const DealPage = () => {
   const router = useRouter();
-  const deals = mockDeals;
+  const { data: deals = [], isLoading } = useDealQuery();
+
+  if (isLoading) {
+    return (
+      <Container>
+        <Loader />
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Deals & Contracts</h1>
           <p className="text-muted-foreground text-sm">
-            Track and manage all your
-            contracts/deals/sponsorships/collaborations
+            Track and manage all your contracts, deals, sponsorships, and collaborations
           </p>
         </div>
-        <Button onClick={() => router.push('deals/add')}>Add New Deal</Button>
+        <Button onClick={() => router.push('deals/add')}>
+          Add New Deal
+        </Button>
       </div>
+
       <div className="flex flex-col gap-6">
         <DealStats deals={deals} />
 
