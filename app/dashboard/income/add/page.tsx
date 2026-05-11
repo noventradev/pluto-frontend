@@ -8,34 +8,14 @@ import { IncomeForm } from '@/components/income/income-form';
 import { IncomeFormValues } from '@/app/lib/types/income.types';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
+import { useAddIncome } from '@/hooks/income/useAddIncome';
 
 export default function AddIncomePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const addIncomeMutation = useMutation({
-    mutationFn: async (newIncome: IncomeFormValues) => {
-      const userId = localStorage.getItem('userId');
-
-      if (!userId) throw new Error('No User');
-
-      const res = await fetch('/api/income', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'user-id': userId,
-        },
-        body: JSON.stringify(newIncome),
-      });
-
-      if (!res.ok) throw new Error('Failed to add Income');
-
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['income'] });
-      router.push('/dashboard/income');
-    },
+ const mutation = useAddIncome(() => {
+    router.push('/dashboard/income');
   });
 
   return (
@@ -55,8 +35,8 @@ export default function AddIncomePage() {
 
       {/* Form */}
       <IncomeForm
-        onSubmit={(data) => addIncomeMutation.mutate(data)}
-        isSubmitting={addIncomeMutation.isPending}
+        onSubmit={(data) => mutation.mutate(data)}
+        isSubmitting={mutation.isPending}
       />
     </Container>
   );

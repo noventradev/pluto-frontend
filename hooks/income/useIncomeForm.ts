@@ -17,7 +17,13 @@ export function useIncomeForm(onSubmit: (data: IncomeFormValues) => void) {
       note: '',
     },
 
-    stream: undefined,
+    stream: {
+      startDate: '',
+      endDate: '',
+      frequency: 'MONTHLY',
+      baseAmount: '',
+      currency: 'USD',
+    },
   };
 
   const [form, setForm] = useState<IncomeFormValues>(initialForm);
@@ -49,44 +55,23 @@ export function useIncomeForm(onSubmit: (data: IncomeFormValues) => void) {
     }));
   };
 
-  const handleStreamChange = <
-    K extends keyof NonNullable<IncomeFormValues['stream']>,
-  >(
+  const handleStreamChange = <K extends keyof IncomeFormValues['stream']>(
     field: K,
-    value: NonNullable<IncomeFormValues['stream']>[K]
+    value: IncomeFormValues['stream'][K]
   ) => {
-    setForm((prev) => {
-      const currentStream = prev.stream ?? {
-        startDate: '',
-        endDate: '',
-        frequency: 'monthly',
-        baseAmount: '',
-        currency: 'USD',
-      };
-
-      return {
-        ...prev,
-        stream: {
-          ...currentStream,
-          [field]: value,
-        },
-      };
-    });
+    setForm((prev) => ({
+      ...prev,
+      stream: {
+        ...prev.stream,
+        [field]: value,
+      },
+    }));
   };
 
   const handleRecurringToggle = (value: boolean) => {
     setForm((prev) => ({
       ...prev,
       isRecurring: value,
-      stream: value
-        ? prev.stream || {
-            startDate: '',
-            endDate: '',
-            frequency: 'monthly',
-            baseAmount: '',
-            currency: 'USD',
-          }
-        : undefined,
       entry: value
         ? {
             ...prev.entry,
@@ -111,14 +96,24 @@ export function useIncomeForm(onSubmit: (data: IncomeFormValues) => void) {
     // Pre-process numeric types if needed before passing to onSubmit
     const payload: IncomeFormValues = {
       ...form,
+      source: {
+        ...form.source,
+        type: form.isRecurring ? 'RECURRING' : 'ONE_TIME',
+      },
       entry: {
         ...form.entry,
         actualAmount: Number(form.entry.actualAmount),
       },
-      stream: form.isRecurring && form.stream ? {
+      stream: form.isRecurring ? {
         ...form.stream,
-        baseAmount: Number(form.stream.baseAmount),
-      } : undefined,
+        baseAmount: form.stream.baseAmount ? Number(form.stream.baseAmount) : null,
+      } : {
+        currency: form.stream.currency,
+        startDate: form.isRecurring ? form.stream.startDate : form.entry.date,
+        endDate: null,
+        frequency: null,
+        baseAmount: null,
+      },
     };
 
     onSubmit(payload);

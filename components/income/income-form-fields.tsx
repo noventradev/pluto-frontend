@@ -8,8 +8,7 @@ import {
   Currency,
   IncomeFormValues,
   IncomeFrequency,
-  IncomeSource,
-  IncomeType,
+  IncomeSource
 } from '@/app/lib/types/income.types';
 import { cn } from '@/app/lib/utils';
 import { FormInput } from '@/components/ui/form-input';
@@ -27,9 +26,9 @@ type Props = {
     field: K,
     value: IncomeFormValues['entry'][K]
   ) => void;
-  onStreamChange: <K extends keyof NonNullable<IncomeFormValues['stream']>>(
+  onStreamChange: <K extends keyof IncomeFormValues['stream']>(
     field: K,
-    value: NonNullable<IncomeFormValues['stream']>[K]
+    value: IncomeFormValues['stream'][K]
   ) => void;
   onRecurringToggle: (val: boolean) => void;
 };
@@ -70,16 +69,6 @@ export function IncomeFormFields({
               onSourceChange('sourceOfIncome', value as IncomeSource);
             }}
             icon={<Layers size={16} />}
-          />
-          <FormSelect
-            label="Income Type"
-            options={INCOME_TYPES}
-            value={form.source.type || ''}
-            onChange={(value) => {
-              if (!value) return;
-              onSourceChange('type', value as IncomeType);
-            }}
-            icon={<Tag size={16} />}
           />
         </div>
       </section>
@@ -129,7 +118,7 @@ export function IncomeFormFields({
             <h3 className="text-sm font-semibold">Recurring Details</h3>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
               <label className="text-muted-foreground text-xs font-medium">
                 Frequency
@@ -149,13 +138,6 @@ export function IncomeFormFields({
                 ))}
               </select>
             </div>
-            
-            <FormSelect
-              label="Currency"
-              options={CURRENCIES}
-              value={form.stream?.currency || ''}
-              onChange={(value) => onStreamChange('currency', value as Currency)}
-            />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -194,12 +176,18 @@ export function IncomeFormFields({
           <h3 className="text-sm font-semibold">Payment Entry</h3>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <FormInput
             label="Actual Amount"
             type="number"
             value={form.entry.actualAmount?.toString() || ''}
             onChange={(e) => onEntryChange('actualAmount', e.target.value)}
+          />
+          <FormSelect
+            label="Currency"
+            options={CURRENCIES}
+            value={form.stream?.currency || ''}
+            onChange={(value) => onStreamChange('currency', value as Currency)}
           />
           <FormInput
             label="Date"

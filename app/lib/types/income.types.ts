@@ -1,23 +1,57 @@
 export type IncomeSource =
-  | 'youtube'
-  | 'twitch'
-  | 'sponsor'
-  | 'tournament'
-  | 'salary'
-  | 'other';
+  | 'YOUTUBE'
+  | 'TWITCH'
+  | 'SPONSOR'
+  | 'TOURNAMENT'
+  | 'SALARY'
+  | 'OTHER';
 
-export type IncomeType = 'one-time' | 'recurring';
+export type IncomeType = 'ONE_TIME' | 'RECURRING' | 'CONTRACT';
 
 export type IncomeFrequency =
-  | 'daily'
-  | 'weekly'
-  | 'monthly'
-  | 'quarterly'
-  | 'annually';
+  | 'DAILY'
+  | 'WEEKLY'
+  | 'MONTHLY'
+  | 'YEARLY'
+  | 'ONE_TIME';
 
-export type IncomeStatus = 'pending' | 'received';
+export type IncomeStatus = 'PENDING' | 'RECEIVED';
 
-export type Currency = 'INR' | 'USD' | 'EUR';
+export type Currency = 'INR' | 'USD' | 'GBP';
+
+export type Income = {
+  id: string;
+  createdAt: string;
+
+  // source
+  source: {
+    sourceOfIncome: IncomeSource;
+    name: string;
+    type: IncomeType;
+  };
+
+  // recurring
+  isRecurring: boolean;
+  stream: {
+    id?: string | null;
+    frequency?: IncomeFrequency | null;
+    interval?: number | null;
+    startDate?: string | null;
+    endDate?: string | null;
+    baseAmount?: string | null;
+    currency: Currency;
+  };
+
+  // entry
+  entry: {
+    id: string;
+    actualAmount: string;
+    currency: Currency;
+    date: string;
+    note?: string;
+    status: IncomeStatus;
+  };
+};
 
 export type IncomeFormValues = {
   // source
@@ -30,12 +64,12 @@ export type IncomeFormValues = {
   // toggle
   isRecurring: boolean;
 
-  // stream (ONLY if recurring)
-  stream?: {
-    startDate: string;
-    endDate: string;
-    frequency: IncomeFrequency | string;
-    baseAmount: number | string;
+  // stream (REQUIRED)
+  stream: {
+    startDate?: string | null;
+    endDate?: string | null;
+    frequency?: IncomeFrequency | string | null;
+    baseAmount?: number | string | null;
     currency: Currency | string;
   };
 

@@ -1,28 +1,29 @@
 export const INCOME_SOURCES = [
-  'youtube',
-  'twitch',
-  'sponsor',
-  'tournament',
-  'salary',
-  'other',
+  'YOUTUBE',
+  'TWITCH',
+  'SPONSOR',
+  'TOURNAMENT',
+  'SALARY',
+  'OTHER',
 ] as const;
 
 export const INCOME_TYPES = [
-  'one-time',
-  'recurring',
+  'ONE_TIME',
+  'RECURRING',
+  'CONTRACT',
 ] as const;
 
 export const INCOME_FREQUENCIES = [
-  'daily',
-  'weekly',
-  'monthly',
-  'quarterly',
-  'annually',
+  'DAILY',
+  'WEEKLY',
+  'MONTHLY',
+  'YEARLY',
+  'ONE_TIME',
 ] as const;
 
 export const INCOME_STATUS = [
-  'pending',
-  'received',
+  'PENDING',
+  'RECEIVED',
 ] as const;
 
-export const CURRENCIES = ['INR', 'USD', 'EUR'] as const;
+export const CURRENCIES = ['INR', 'USD', 'GBP'] as const;
