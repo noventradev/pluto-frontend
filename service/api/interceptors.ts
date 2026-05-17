@@ -1,46 +1,42 @@
 import { AxiosInstance } from 'axios';
 
+const TOKEN_KEY = 'pluto_token';
+
 export function attachInterceptors(client: AxiosInstance) {
+  // REQUEST: Attach JWT token automatically
   client.interceptors.request.use(
     (config) => {
-      //1. Auth token
-      const token = localStorage.getItem('userId');
-      if (!token) throw new Error('No user');
-      config.headers['user-id'] = token; // ← replaces your manual header
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      }
 
-      //2. Log outgoing reqs in dev
       if (process.env.NODE_ENV === 'development') {
         console.log(`→ [${config.method?.toUpperCase()}] ${config.url}`);
       }
+
       return config;
     },
-    (error) => Promise.reject(error)
+    (error) => Promise.reject(error),
   );
 
-  // RESPONSE INTERCEPTORS
+  // RESPONSE: Handle 401 with auto logout + redirect
   client.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    async (error) => {
-      const original = error.config;
-
-      if (error.response?.status === 401 && !original._retry) {
-        original._retry = true;
-        try {
-          //   const newToken = await refreshAccessToken();
-          //   original.headers.Authorization = `Bearer ${newToken}`;
-          //   return client(original); // retry original request
-        } catch {
-          // redirect to login
-          window.location.href = '/login';
-        }
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401 && typeof window !== 'undefined') {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem('pluto_user');
+        window.location.href = '/sign-in';
       }
+
       return Promise.reject({
         status: error.response?.status,
         message: error.response?.data?.message || 'Something went wrong',
         data: error.response?.data,
       });
-    }
+    },
   );
 }
